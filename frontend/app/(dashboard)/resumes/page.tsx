@@ -318,7 +318,7 @@ export default function ResumesPage() {
           <Card className="w-full max-w-2xl max-h-[80vh] overflow-auto">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">{showViewModal.resume_json?.name || "Resume"}</h2>
+                <h2 className="text-lg font-semibold">{(showViewModal.resume_json as Record<string, unknown>)?.name as string || "Resume"}</h2>
                 <Button variant="ghost" size="icon" onClick={() => setShowViewModal(null)}>
                   <X className="w-4 h-4" />
                 </Button>
