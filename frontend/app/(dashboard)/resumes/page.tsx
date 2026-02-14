@@ -206,7 +206,7 @@ export default function ResumesPage() {
 
                 {/* Resume Info */}
                 <h3 className="font-semibold mb-1 truncate">
-                  {resume.resume_json?.name || "Untitled Resume"}
+                  {(resume.resume_json as Record<string, unknown>)?.name as string || "Untitled Resume"}
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   Created {formatDate(resume.created_at)}
