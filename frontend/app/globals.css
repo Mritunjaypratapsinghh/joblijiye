@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Light Theme (default) */
+  :root, [data-theme="light"] {
+    --background: 0 0% 98%;
+    --foreground: 224 71% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 4%;
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 9% 46%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 239 84% 67%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 239 84% 67%;
+    --radius: 0.75rem;
+    --success: 142 76% 36%;
+    --warning: 38 92% 50%;
+  }
+
+  /* Dark Theme */
+  [data-theme="dark"] {
+    --background: 224 71% 4%;
+    --foreground: 210 20% 98%;
+    --card: 222 47% 8%;
+    --card-foreground: 210 20% 98%;
+    --popover: 222 47% 8%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 215 28% 17%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 28% 17%;
+    --muted-foreground: 217 10% 64%;
+    --accent: 239 84% 67%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 28% 17%;
+    --input: 215 28% 17%;
+    --ring: 239 84% 67%;
+    --success: 142 76% 36%;
+    --warning: 38 92% 50%;
+  }
+
+  /* OLED Theme */
+  [data-theme="oled"] {
+    --background: 0 0% 0%;
+    --foreground: 210 20% 98%;
+    --card: 0 0% 4%;
+    --card-foreground: 210 20% 98%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 217 10% 64%;
+    --accent: 239 84% 67%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 0 0% 15%;
+    --input: 0 0% 10%;
+    --ring: 239 84% 67%;
+    --success: 142 76% 36%;
+    --warning: 38 92% 50%;
+  }
+
+  /* Accent Colors */
+  [data-accent="indigo"] { --primary: 239 84% 67%; --accent: 239 84% 67%; --ring: 239 84% 67%; }
+  [data-accent="blue"] { --primary: 217 91% 60%; --accent: 217 91% 60%; --ring: 217 91% 60%; }
+  [data-accent="green"] { --primary: 160 84% 39%; --accent: 160 84% 39%; --ring: 160 84% 39%; }
+  [data-accent="purple"] { --primary: 263 70% 50%; --accent: 263 70% 50%; --ring: 263 70% 50%; }
+  [data-accent="pink"] { --primary: 330 81% 60%; --accent: 330 81% 60%; --ring: 330 81% 60%; }
+  [data-accent="orange"] { --primary: 25 95% 53%; --accent: 25 95% 53%; --ring: 25 95% 53%; }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground antialiased; }
+  html { scroll-behavior: smooth; }
+}
+
+@layer components {
+  .glass { @apply bg-card/80 backdrop-blur-xl; }
+  .gradient-text { @apply bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent; }
+  .gradient-bg { @apply bg-gradient-to-br from-primary/20 via-purple-500/10 to-pink-500/20; }
+  .card-hover { @apply transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1; }
+}
+
+@layer utilities {
+  .animate-float { animation: float 6s ease-in-out infinite; }
+  .animate-float-delayed { animation: float 6s ease-in-out infinite 2s; }
+  .animate-pulse-slow { animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  .animate-gradient { background-size: 200% 200%; animation: gradient 8s ease infinite; }
+  .animate-slide-up { animation: slideUp 0.5s ease-out; }
+  .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+}
+
+@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+@keyframes gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { @apply bg-muted/50; }
+::-webkit-scrollbar-thumb { @apply bg-muted-foreground/30 rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-muted-foreground/50; }
