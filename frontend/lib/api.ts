@@ -150,7 +150,7 @@ export const applications = {
   },
   create: (token: string, data: { job_id: string; resume_id?: string }) =>
     fetchAPI("/applications", { method: "POST", token, body: JSON.stringify(data) }),
-  update: (token: string, id: string, data: { status?: string; notes?: string }) =>
+  update: (token: string, id: string, data: { status?: string; notes?: string; follow_up_date?: string | null }) =>
     fetchAPI(`/applications/${id}`, { method: "PATCH", token, body: JSON.stringify(data) }),
 };
 
