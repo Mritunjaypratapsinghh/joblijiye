@@ -1,9 +1,10 @@
 """Resume routes."""
 import logging
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
 
 from app.repositories import resume_repository, job_repository, profile_repository
 from app.services.ai import groq_service
+from app.services.linkedin_parser import linkedin_parser
 from app.api.v1.auth.dependencies import get_current_user
 from app.api.v1.resumes.schemas import (
     ResumeResponse,
@@ -17,6 +18,111 @@ from app.api.v1.resumes.schemas import (
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/resumes", tags=["resumes"])
+
+
+@router.post("/upload")
+async def upload_resume(
+    file: UploadFile = File(...),
+    user: dict = Depends(get_current_user)
+):
+    """Upload and parse a resume PDF to create a base resume."""
+    if not file.filename.endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Only PDF files are supported")
+    
+    try:
+        content = await file.read()
+        parsed = linkedin_parser.parse(content)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to parse PDF: {e}")
+    
+    # Build resume JSON from parsed data
+    resume_json = {
+        "name": parsed.get("full_name", ""),
+        "contact": {
+            "phone": parsed.get("phone", ""),
+            "location": parsed.get("location", ""),
+            "linkedin": parsed.get("linkedin_url", ""),
+            "github": parsed.get("github_url", ""),
+        },
+        "summary": "",
+        "experience": parsed.get("experience", []),
+        "education": parsed.get("education", []),
+        "skills": parsed.get("skills", []),
+    }
+    
+    # Save to database
+    saved = await resume_repository.create({
+        "user_id": user["id"],
+        "job_id": None,
+        "resume_json": resume_json,
+        "ats_score": None,
+        "keywords_matched": [],
+        "keywords_missing": [],
+    })
+    
+    return {
+        "id": saved["id"],
+        "resume_json": resume_json,
+        "message": "Resume uploaded and parsed successfully",
+    }
+
+
+@router.post("/from-profile")
+async def create_from_profile(user: dict = Depends(get_current_user)):
+    """Create an AI-enhanced resume from user's profile data."""
+    profile = await profile_repository.get_by_user(user["id"])
+    if not profile:
+        raise HTTPException(status_code=400, detail="Profile not found. Please complete your profile first.")
+    
+    # Use AI to enhance the resume
+    try:
+        resume_json = await groq_service.generate_resume(
+            profile=profile,
+            job_description="General software engineering role requiring strong technical skills",
+            job_title="Software Engineer",
+            company="Tech Company"
+        )
+        # Add contact info
+        resume_json["name"] = profile.get("full_name", "")
+        resume_json["contact"] = {
+            "phone": profile.get("phone", ""),
+            "location": profile.get("location", ""),
+            "linkedin": profile.get("linkedin_url", ""),
+            "github": profile.get("github_url", ""),
+        }
+        resume_json["education"] = profile.get("education", [])
+    except Exception as e:
+        logger.error(f"AI generation failed: {e}")
+        # Fallback to basic profile data
+        resume_json = {
+            "name": profile.get("full_name", ""),
+            "contact": {
+                "phone": profile.get("phone", ""),
+                "location": profile.get("location", ""),
+                "linkedin": profile.get("linkedin_url", ""),
+                "github": profile.get("github_url", ""),
+            },
+            "summary": "",
+            "experience": profile.get("experience", []),
+            "education": profile.get("education", []),
+            "skills": profile.get("skills", []),
+        }
+    
+    # Save to database
+    saved = await resume_repository.create({
+        "user_id": user["id"],
+        "job_id": None,
+        "resume_json": resume_json,
+        "ats_score": None,
+        "keywords_matched": [],
+        "keywords_missing": [],
+    })
+    
+    return {
+        "id": saved["id"],
+        "resume_json": resume_json,
+        "message": "Resume created with AI enhancement",
+    }
 
 
 @router.get("", response_model=list[ResumeResponse])

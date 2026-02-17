@@ -21,6 +21,8 @@ class JobResponse(BaseModel):
     posted_at: Optional[datetime] = None
     scraped_at: Optional[datetime] = None
     required_skills: list[str] = []
+    match_score: Optional[int] = None
+    match_label: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -54,3 +56,5 @@ class ScrapeRequest(BaseModel):
 class ScrapeResponse(BaseModel):
     scraped: int
     saved: int
+    task_id: Optional[str] = None
+    status: Optional[str] = None

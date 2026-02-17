@@ -7,6 +7,8 @@ from app.services.scraper.base import JobData
 from app.services.scraper.linkedin import linkedin_scraper
 from app.services.scraper.indeed import indeed_scraper
 from app.services.scraper.glassdoor import glassdoor_scraper
+from app.services.scraper.lever import lever_scraper
+from app.services.scraper.greenhouse import greenhouse_scraper
 from app.repositories import job_repository
 
 logger = logging.getLogger(__name__)
@@ -19,6 +21,8 @@ class JobScraperService:
         "linkedin": linkedin_scraper,
         "indeed": indeed_scraper,
         "glassdoor": glassdoor_scraper,
+        "lever": lever_scraper,
+        "greenhouse": greenhouse_scraper,
     }
 
     async def search_all(

@@ -2,6 +2,7 @@
 from typing import Optional
 from app.repositories.base import BaseRepository
 from app.database import get_supabase
+from app.utils.text import clean_description
 
 
 class JobRepository(BaseRepository):
@@ -15,6 +16,8 @@ class JobRepository(BaseRepository):
 
     async def get_by_id(self, id: str) -> Optional[dict]:
         response = self.db.table(self.TABLE).select("*").eq("id", id).single().execute()
+        if response.data and "description" in response.data:
+            response.data["description"] = clean_description(response.data["description"])
         return response.data
 
     async def get_all(
@@ -25,16 +28,23 @@ class JobRepository(BaseRepository):
         return response.data or []
 
     async def create(self, data: dict) -> dict:
+        if "description" in data:
+            data["description"] = clean_description(data["description"])
         response = self.db.table(self.TABLE).insert(data).execute()
         return response.data[0]
 
     async def upsert(self, data: dict) -> dict:
         """Insert or update job by apply_url."""
+        if "description" in data:
+            data["description"] = clean_description(data["description"])
         response = self.db.table(self.TABLE).upsert(data, on_conflict="apply_url").execute()
         return response.data[0]
 
     async def bulk_upsert(self, jobs: list[dict]) -> list[dict]:
         """Bulk insert/update jobs."""
+        for job in jobs:
+            if "description" in job:
+                job["description"] = clean_description(job["description"])
         response = self.db.table(self.TABLE).upsert(jobs, on_conflict="apply_url").execute()
         return response.data or []
 
@@ -52,6 +62,8 @@ class JobRepository(BaseRepository):
         source: str | None = None,
         location: str | None = None,
         remote_type: str | None = None,
+        experience_level: str | None = None,
+        sort_by: str = "recent",
         limit: int = 50,
         offset: int = 0,
     ) -> list[dict]:
@@ -65,7 +77,18 @@ class JobRepository(BaseRepository):
             q = q.ilike("location", f"%{location}%")
         if remote_type:
             q = q.eq("remote_type", remote_type)
-        response = q.order("scraped_at", desc=True).range(offset, offset + limit - 1).execute()
+        if experience_level:
+            q = q.eq("experience_level", experience_level)
+        
+        # Sorting
+        if sort_by == "salary_desc":
+            q = q.order("salary_max", desc=True, nullsfirst=False)
+        elif sort_by == "salary_asc":
+            q = q.order("salary_min", desc=False, nullsfirst=False)
+        else:  # recent
+            q = q.order("scraped_at", desc=True)
+        
+        response = q.range(offset, offset + limit - 1).execute()
         return response.data or []
 
     async def count(self, is_active: bool = True) -> int:
@@ -83,6 +106,7 @@ class JobRepository(BaseRepository):
         source: str | None = None,
         location: str | None = None,
         remote_type: str | None = None,
+        experience_level: str | None = None,
     ) -> int:
         """Count jobs with filters."""
         q = self.db.table(self.TABLE).select("id", count="exact").eq("is_active", True)
@@ -94,6 +118,8 @@ class JobRepository(BaseRepository):
             q = q.ilike("location", f"%{location}%")
         if remote_type:
             q = q.eq("remote_type", remote_type)
+        if experience_level:
+            q = q.eq("experience_level", experience_level)
         response = q.execute()
         return response.count or 0
 

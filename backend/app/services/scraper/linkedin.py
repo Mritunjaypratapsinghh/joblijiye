@@ -46,6 +46,11 @@ class LinkedInScraper(BaseScraper):
                 try:
                     job = self._parse_job_card(card)
                     if job:
+                        # Fetch full details to get description
+                        if job.external_id:
+                            details = await self.get_job_details(job.external_id)
+                            if details and details.description:
+                                job = details
                         jobs.append(job)
                 except Exception as e:
                     logger.debug(f"Failed to parse job card: {e}")
@@ -96,11 +101,12 @@ class LinkedInScraper(BaseScraper):
 
     async def get_job_details(self, job_id: str) -> Optional[JobData]:
         """Get detailed job info from LinkedIn."""
-        url = f"{self.BASE_URL}/jobs-guest/jobs/api/jobPosting/{job_id}"
+        url = f"{self.BASE_URL}/jobs/view/{job_id}"
 
         try:
-            response = await self.client.get(url)
+            response = await self.client.get(url, headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"})
             if response.status_code != 200:
+                logger.warning(f"LinkedIn job details failed: {response.status_code}")
                 return None
 
             soup = BeautifulSoup(response.text, "lxml")
@@ -112,24 +118,31 @@ class LinkedInScraper(BaseScraper):
 
     def _parse_job_details(self, soup: BeautifulSoup, job_id: str) -> Optional[JobData]:
         """Parse job details page."""
-        title = soup.find("h2", class_="top-card-layout__title")
-        company = soup.find("a", class_="topcard__org-name-link")
-        location = soup.find("span", class_="topcard__flavor--bullet")
-        description = soup.find("div", class_="description__text")
+        # Try multiple selectors for title
+        title = soup.find("h1", class_="top-card-layout__title") or soup.find("h1", class_="topcard__title") or soup.find("h1")
+        company = soup.find("a", class_="topcard__org-name-link") or soup.find("span", class_="topcard__flavor")
+        location = soup.find("span", class_="topcard__flavor--bullet") or soup.find("span", class_="topcard__flavor topcard__flavor--bullet")
+        
+        # Description - try multiple selectors
+        description = soup.find("div", class_="description__text") or soup.find("div", class_="show-more-less-html__markup") or soup.find("section", class_="description")
 
-        if not all([title, company]):
+        if not title:
             return None
 
+        title_text = title.get_text(strip=True) if title else ""
+        company_text = company.get_text(strip=True) if company else "Unknown"
+        location_text = location.get_text(strip=True) if location else None
         desc_text = description.get_text(strip=True) if description else ""
+        
         skills = self._extract_skills(desc_text)
 
         return JobData(
             external_id=job_id,
             source=self.SOURCE,
-            company=company.get_text(strip=True),
-            title=title.get_text(strip=True),
-            location=location.get_text(strip=True) if location else None,
-            description=desc_text[:5000],
+            company=company_text,
+            title=title_text,
+            location=location_text,
+            description=desc_text[:5000] if desc_text else None,
             salary_min=None,
             salary_max=None,
             job_type=None,

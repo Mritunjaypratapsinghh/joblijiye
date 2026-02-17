@@ -1,5 +1,5 @@
 // Background service worker
-const API_URL = "http://localhost:8000/api/v1";
+const API_URL = "https://joblijiye.onrender.com/api/v1";
 
 // Listen for messages from popup/content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -25,7 +25,18 @@ async function getProfile() {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) return null;
-    return res.json();
+    const profile = await res.json();
+    
+    // Also get user email
+    const userRes = await fetch(`${API_URL}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (userRes.ok) {
+      const user = await userRes.json();
+      profile.email = user.email;
+    }
+    
+    return profile;
   } catch {
     return null;
   }
@@ -33,5 +44,5 @@ async function getProfile() {
 
 // Handle extension install
 chrome.runtime.onInstalled.addListener(() => {
-  console.log("Job Tracker extension installed");
+  console.log("JobLijiye extension installed");
 });

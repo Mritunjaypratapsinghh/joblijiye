@@ -80,7 +80,7 @@ Profile:
 Target Job:
 - Title: {job_title}
 - Company: {company}
-- Description: {job_description[:3000]}
+- Description: {(job_description or 'No description available')[:3000]}
 
 Generate a tailored resume JSON optimized for this specific role."""
 

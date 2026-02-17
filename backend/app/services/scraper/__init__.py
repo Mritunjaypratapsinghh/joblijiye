@@ -4,6 +4,8 @@ from app.services.scraper.service import job_scraper_service
 from app.services.scraper.linkedin import linkedin_scraper
 from app.services.scraper.indeed import indeed_scraper
 from app.services.scraper.glassdoor import glassdoor_scraper
+from app.services.scraper.lever import lever_scraper
+from app.services.scraper.greenhouse import greenhouse_scraper
 
 __all__ = [
     "BaseScraper",
@@ -12,4 +14,6 @@ __all__ = [
     "linkedin_scraper",
     "indeed_scraper",
     "glassdoor_scraper",
+    "lever_scraper",
+    "greenhouse_scraper",
 ]

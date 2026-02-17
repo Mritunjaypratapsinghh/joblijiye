@@ -1,7 +1,7 @@
 """Application schemas."""
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, date
 from enum import Enum
 
 
@@ -17,6 +17,7 @@ class ApplicationBase(BaseModel):
     job_id: str
     status: ApplicationStatus = ApplicationStatus.SAVED
     notes: Optional[str] = None
+    follow_up_date: Optional[date] = None
 
 
 class ApplicationCreate(ApplicationBase):
@@ -26,6 +27,7 @@ class ApplicationCreate(ApplicationBase):
 class ApplicationUpdate(BaseModel):
     status: Optional[ApplicationStatus] = None
     notes: Optional[str] = None
+    follow_up_date: Optional[date] = None
 
 
 class ApplicationResponse(ApplicationBase):

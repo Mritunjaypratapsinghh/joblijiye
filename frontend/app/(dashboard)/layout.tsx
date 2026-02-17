@@ -24,13 +24,19 @@ import {
   CheckCircle2,
   Clock,
   X,
+  User,
+  BarChart3,
 } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/jobs", label: "Jobs", icon: Search },
+  { href: "/saved", label: "Saved Jobs", icon: Briefcase },
   { href: "/applications", label: "Applications", icon: ClipboardList },
   { href: "/resumes", label: "Resumes", icon: FileText },
+  { href: "/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/alerts", label: "Job Alerts", icon: Bell },
+  { href: "/profile", label: "Profile", icon: User },
 ];
 
 const THEMES = [

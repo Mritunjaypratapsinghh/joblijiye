@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/providers/auth-provider";
 import { applications as appsApi, Application } from "@/lib/api";
+import { toast } from "sonner";
 import { 
   ClipboardList, 
   Building2, 
@@ -20,7 +21,10 @@ import {
   ArrowRight,
   Trash2,
   Edit,
-  ExternalLink
+  ExternalLink,
+  StickyNote,
+  X,
+  Save
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ElementType; bgColor: string }> = {
@@ -64,6 +68,10 @@ export default function ApplicationsPage() {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"pipeline" | "list">("pipeline");
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [notesModal, setNotesModal] = useState<Application | null>(null);
+  const [notesText, setNotesText] = useState("");
+  const [followUpDate, setFollowUpDate] = useState("");
+  const [savingNotes, setSavingNotes] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -95,10 +103,36 @@ export default function ApplicationsPage() {
     try {
       await appsApi.update(token!, id, { status });
       await loadApplications();
+      toast.success("Status updated");
     } catch (err) {
-      console.error("Failed to update:", err);
+      toast.error("Failed to update status");
     }
     setOpenMenu(null);
+  };
+
+  const openNotesModal = (app: Application) => {
+    setNotesModal(app);
+    setNotesText(app.notes || "");
+    setFollowUpDate(app.follow_up_date || "");
+    setOpenMenu(null);
+  };
+
+  const saveNotes = async () => {
+    if (!notesModal) return;
+    setSavingNotes(true);
+    try {
+      await appsApi.update(token!, notesModal.id, { 
+        notes: notesText,
+        follow_up_date: followUpDate || null,
+      });
+      await loadApplications();
+      toast.success("Saved successfully");
+      setNotesModal(null);
+    } catch (err) {
+      toast.error("Failed to save");
+    } finally {
+      setSavingNotes(false);
+    }
   };
 
   const getApplicationsByStatus = (status: string) => {
@@ -247,6 +281,22 @@ export default function ApplicationsPage() {
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Building2 className="w-4 h-4" />
                         <span>{app.jobs?.company || "Unknown Company"}</span>
+                        {app.notes && (
+                          <Badge variant="outline" className="text-xs ml-2">
+                            <StickyNote className="w-3 h-3 mr-1" />
+                            Notes
+                          </Badge>
+                        )}
+                        {app.follow_up_date && (
+                          <Badge variant="outline" className={`text-xs ml-2 ${
+                            new Date(app.follow_up_date) <= new Date() 
+                              ? "border-amber-500 text-amber-600 dark:text-amber-400" 
+                              : ""
+                          }`}>
+                            <Calendar className="w-3 h-3 mr-1" />
+                            Follow-up: {formatDate(app.follow_up_date)}
+                          </Badge>
+                        )}
                       </div>
                     </div>
                     <div className="text-right">
@@ -264,6 +314,9 @@ export default function ApplicationsPage() {
                       </Button>
                       {openMenu === app.id && (
                         <div ref={menuRef} className="absolute right-0 top-full mt-1 w-48 bg-popover border rounded-lg shadow-lg py-1 z-50">
+                          <button onClick={() => openNotesModal(app)} className="w-full px-3 py-2 text-sm text-left hover:bg-muted flex items-center gap-2">
+                            <StickyNote className="w-4 h-4" /> {app.notes ? "Edit Notes" : "Add Notes"}
+                          </button>
                           <button onClick={() => updateStatus(app.id, "screening")} className="w-full px-3 py-2 text-sm text-left hover:bg-muted flex items-center gap-2">
                             <Eye className="w-4 h-4" /> Move to Screening
                           </button>
@@ -284,6 +337,60 @@ export default function ApplicationsPage() {
               </Card>
             );
           })}
+        </div>
+      )}
+
+      {/* Notes Modal */}
+      {notesModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-lg font-semibold">Application Details</h2>
+                  <p className="text-sm text-muted-foreground">
+                    {notesModal.jobs?.title} at {notesModal.jobs?.company}
+                  </p>
+                </div>
+                <Button variant="ghost" size="icon" onClick={() => setNotesModal(null)}>
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Follow-up Date</label>
+                  <input
+                    type="date"
+                    value={followUpDate}
+                    onChange={(e) => setFollowUpDate(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">You&apos;ll get a reminder notification on this date</p>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Notes</label>
+                  <textarea
+                    value={notesText}
+                    onChange={(e) => setNotesText(e.target.value)}
+                    placeholder="Add notes about this application (interview prep, contact info, follow-ups...)"
+                    className="w-full min-h-[150px] px-3 py-2 border rounded-lg bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+              </div>
+              
+              <div className="flex gap-2 mt-4">
+                <Button variant="outline" className="flex-1" onClick={() => setNotesModal(null)}>
+                  Cancel
+                </Button>
+                <Button className="flex-1" onClick={saveNotes} disabled={savingNotes}>
+                  {savingNotes ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                  Save Notes
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>

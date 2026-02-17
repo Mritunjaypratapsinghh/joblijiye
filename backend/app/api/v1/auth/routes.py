@@ -1,6 +1,8 @@
 """Auth routes - Custom authentication (no Supabase auth)."""
 import logging
-from fastapi import APIRouter, HTTPException, status, Depends, Request
+import secrets
+from datetime import datetime, timedelta, timezone
+from fastapi import APIRouter, HTTPException, status, Depends, Request, UploadFile, File
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from google.auth.transport import requests
 from google.oauth2 import id_token
@@ -9,6 +11,8 @@ from app.config import get_settings
 from app.database import get_supabase_admin
 from app.core.security import get_password_hash, verify_password, create_access_token, decode_token
 from app.core.rate_limit import limiter
+from app.services.linkedin_parser import linkedin_parser
+from app.services.email_service import email_service
 from app.api.v1.auth.schemas import (
     UserRegister,
     UserLogin,
@@ -17,6 +21,8 @@ from app.api.v1.auth.schemas import (
     UserResponse,
     ProfileUpdate,
     ProfileResponse,
+    ForgotPassword,
+    ResetPassword,
 )
 
 logger = logging.getLogger(__name__)
@@ -90,6 +96,60 @@ async def login(request: Request, data: UserLogin):
     
     token = create_access_token({"sub": user["id"], "email": user["email"]})
     return TokenResponse(access_token=token)
+
+
+@router.post("/forgot-password")
+@limiter.limit("3/minute")
+async def forgot_password(request: Request, data: ForgotPassword):
+    """Request password reset email."""
+    db = get_supabase_admin()
+    result = db.table("users").select("id, email").eq("email", data.email).execute()
+    
+    # Always return success to prevent email enumeration
+    if not result.data:
+        return {"message": "If an account exists, a reset email has been sent"}
+    
+    user = result.data[0]
+    token = secrets.token_urlsafe(32)
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
+    
+    # Invalidate old tokens
+    db.table("password_reset_tokens").update({"used": True}).eq("user_id", user["id"]).execute()
+    
+    # Create new token
+    db.table("password_reset_tokens").insert({
+        "user_id": user["id"],
+        "token": token,
+        "expires_at": expires_at.isoformat(),
+    }).execute()
+    
+    await email_service.send_password_reset(user["email"], token)
+    return {"message": "If an account exists, a reset email has been sent"}
+
+
+@router.post("/reset-password")
+@limiter.limit("5/minute")
+async def reset_password(request: Request, data: ResetPassword):
+    """Reset password using token."""
+    db = get_supabase_admin()
+    
+    result = db.table("password_reset_tokens").select("*").eq("token", data.token).eq("used", False).execute()
+    if not result.data:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+    
+    token_record = result.data[0]
+    expires_at = datetime.fromisoformat(token_record["expires_at"].replace("Z", "+00:00"))
+    
+    if datetime.now(timezone.utc) > expires_at:
+        raise HTTPException(status_code=400, detail="Token has expired")
+    
+    # Update password
+    db.table("users").update({"password_hash": get_password_hash(data.password)}).eq("id", token_record["user_id"]).execute()
+    
+    # Mark token as used
+    db.table("password_reset_tokens").update({"used": True}).eq("id", token_record["id"]).execute()
+    
+    return {"message": "Password reset successfully"}
 
 
 @router.post("/google", response_model=TokenResponse)
@@ -173,3 +233,60 @@ async def update_profile(data: ProfileUpdate, user: dict = Depends(get_current_u
     if not result.data:
         raise HTTPException(status_code=404, detail="Profile not found")
     return ProfileResponse(**result.data[0])
+
+
+@router.post("/profile/import-linkedin")
+async def import_linkedin_profile(
+    file: UploadFile = File(...),
+    user: dict = Depends(get_current_user)
+):
+    """Import profile from LinkedIn PDF export."""
+    if not file.filename.endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Only PDF files are supported")
+    
+    if file.size > 5 * 1024 * 1024:  # 5MB limit
+        raise HTTPException(status_code=400, detail="File too large (max 5MB)")
+    
+    try:
+        content = await file.read()
+        parsed = linkedin_parser.parse(content)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+    # Update profile with parsed data
+    db = get_supabase_admin()
+    update_data = {}
+    
+    if parsed.get("full_name"):
+        update_data["full_name"] = parsed["full_name"]
+    if parsed.get("location"):
+        update_data["location"] = parsed["location"]
+    if parsed.get("phone"):
+        update_data["phone"] = parsed["phone"]
+    if parsed.get("linkedin_url"):
+        update_data["linkedin_url"] = parsed["linkedin_url"]
+    if parsed.get("github_url"):
+        update_data["github_url"] = parsed["github_url"]
+    if parsed.get("skills"):
+        update_data["skills"] = parsed["skills"]
+    if parsed.get("experience"):
+        update_data["experience"] = parsed["experience"]
+    if parsed.get("education"):
+        update_data["education"] = parsed["education"]
+    
+    if update_data:
+        db.table("profiles").update(update_data).eq("user_id", user["id"]).execute()
+    
+    return {
+        "message": "Profile imported successfully",
+        "imported": {
+            "name": bool(parsed.get("full_name")),
+            "location": bool(parsed.get("location")),
+            "phone": bool(parsed.get("phone")),
+            "linkedin": bool(parsed.get("linkedin_url")),
+            "github": bool(parsed.get("github_url")),
+            "skills_count": len(parsed.get("skills", [])),
+            "experience_count": len(parsed.get("experience", [])),
+            "education_count": len(parsed.get("education", [])),
+        }
+    }

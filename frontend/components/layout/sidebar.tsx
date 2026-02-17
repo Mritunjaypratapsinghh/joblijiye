@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { Briefcase, FileText, LayoutDashboard, LogOut } from "lucide-react";
+import { Briefcase, FileText, LayoutDashboard, LogOut, BarChart3 } from "lucide-react";
 
 const navItems = [
   { href: "/", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/jobs", icon: Briefcase, label: "Jobs" },
   { href: "/applications", icon: FileText, label: "Applications" },
   { href: "/resumes", icon: FileText, label: "Resumes" },
+  { href: "/analytics", icon: BarChart3, label: "Analytics" },
 ];
 
 export function Sidebar() {

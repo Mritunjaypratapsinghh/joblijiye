@@ -29,6 +29,15 @@ class UserResponse(BaseModel):
     full_name: Optional[str] = None
 
 
+class ForgotPassword(BaseModel):
+    email: EmailStr
+
+
+class ResetPassword(BaseModel):
+    token: str
+    password: str
+
+
 class ProfileUpdate(BaseModel):
     full_name: Optional[str] = None
     phone: Optional[str] = None

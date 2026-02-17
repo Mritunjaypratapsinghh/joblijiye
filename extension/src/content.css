@@ -1,37 +1,55 @@
+/* JobLijiye Extension Styles */
+
 .job-tracker-float-btn {
   position: fixed;
   bottom: 20px;
   right: 20px;
   z-index: 999999;
   padding: 12px 20px;
-  background: #2563eb;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
-  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transition: all 0.2s ease;
 }
 
 .job-tracker-float-btn:hover {
-  background: #1d4ed8;
   transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5);
+}
+
+.job-tracker-float-btn:active {
+  transform: translateY(0);
+}
+
+.job-tracker-float-btn svg {
+  width: 16px;
+  height: 16px;
 }
 
 .job-tracker-notification {
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 999999;
-  padding: 12px 20px;
-  background: #10b981;
-  color: white;
-  border-radius: 8px;
+  z-index: 9999999;
+  padding: 14px 20px;
+  background: white;
+  color: #1f2937;
+  border-radius: 12px;
   font-size: 14px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   animation: slideIn 0.3s ease;
+  border-left: 4px solid #6366f1;
 }
 
 @keyframes slideIn {

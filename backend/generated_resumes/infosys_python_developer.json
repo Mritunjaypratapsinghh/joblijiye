@@ -1,0 +1,90 @@
+{
+  "name": "Mritunjay Pratap Singh",
+  "email": "mritunjaypratapsinghh@gmail.com",
+  "phone": "+91-7347760567",
+  "location": "Mayur Vihar-1, New Delhi",
+  "linkedin": "https://www.linkedin.com/in/mritunjaypratapsinghh/",
+  "github": "https://github.com/Mritunjaypratapsinghh",
+  "leetcode": "https://leetcode.com/u/mritunjaypratapsinghh/",
+  
+  "career_objective": "Senior Backend Engineer with 2+ years building scalable microservices and event-driven systems using Python, FastAPI, and Django. Proven expertise in project management, agile methodologies, and delivering production-grade solutions. Seeking to leverage technical leadership and ML/Python skills to drive digital transformation initiatives at Infosys.",
+
+  "experience": [
+    {
+      "company": "Kogta Financial India Limited",
+      "title": "Software Developer",
+      "dates": "July 2025 - Present",
+      "location": "New Delhi",
+      "bullets": [
+        "Led end-to-end development of Communication Aggregator Service using Python/FastAPI, processing 100K+ daily messages across WhatsApp/SMS/RCS with 40+ REST APIs and AWS SQS-based async processing.",
+        "Managed project lifecycle for Multi-Vendor Dialer Service integrating Ozonetel, Knowlarity, and Exotel with RBI-compliant call routing, reducing manual effort by 80% for 50+ agents.",
+        "Architected Receivable Engine with PostgreSQL and event-driven architecture, coordinating cross-functional teams for automated payment reconciliation workflows.",
+        "Implemented comprehensive tracking system with audit trails, improving traceability by 100% and reducing support resolution time by 50% through effective stakeholder communication."
+      ]
+    },
+    {
+      "company": "Coding Ninjas",
+      "title": "Python Technical Associate",
+      "dates": "Feb 2023 - Nov 2024",
+      "location": "Gurugram",
+      "bullets": [
+        "Developed internal tools using Django, DRF, and PostgreSQL to automate student support workflows, applying agile methodologies.",
+        "Built and optimized REST APIs for real-time code evaluation systems, mentoring junior developers on Python best practices."
+      ]
+    }
+  ],
+
+  "projects": [
+    {
+      "name": "Communication Aggregator Service",
+      "tech_stack": "Python, FastAPI, MongoDB, AWS SQS, OpenSearch, Machine Learning",
+      "bullets": [
+        "Engineered multi-vertical communication platform with ML-based message routing, processing 100K+ daily messages across 4 business verticals.",
+        "Implemented event-driven architecture with AWS SQS for async batch processing, demonstrating strong understanding of SDLC and agile methodologies.",
+        "Built self-service Excel upload feature reducing campaign launch time from days to hours, showcasing project planning and stakeholder management skills."
+      ]
+    },
+    {
+      "name": "Multi-Vendor Dialer Service",
+      "tech_stack": "Python, FastAPI, MongoDB, REST APIs, Webhooks",
+      "bullets": [
+        "Architected extensible adapter framework supporting multiple vendors with automated number selection, applying design principles and architecture frameworks.",
+        "Built real-time webhook processing for call status updates and CDR logging, managing project resources to meet delivery timelines."
+      ]
+    },
+    {
+      "name": "Receivable Engine (NACH Processing)",
+      "tech_stack": "Python, FastAPI, PostgreSQL, AWS SQS",
+      "bullets": [
+        "Built automated payment reconciliation system handling NACH and cheque processing with batch validation workflows.",
+        "Designed event-driven architecture using AWS SQS, demonstrating knowledge of performance engineering and technology management."
+      ]
+    }
+  ],
+
+  "skills": {
+    "languages": ["Python", "Java", "Go", "SQL"],
+    "frameworks": ["FastAPI", "Django", "Django REST Framework", "Flask", "Spring Boot"],
+    "databases": ["PostgreSQL", "MongoDB", "MySQL", "Redis", "SQLite"],
+    "cloud": ["AWS (SQS, S3)", "Docker", "Git", "GitLab CI/CD"],
+    "tools": ["REST APIs", "Webhooks", "OAuth 2.0", "Postman", "JIRA", "Swagger", "Agile/Scrum"],
+    "concepts": ["Machine Learning", "Microservices", "Event-driven Architecture", "Project Management", "SDLC", "DSA", "OOP", "DBMS"]
+  },
+
+  "education": [
+    {
+      "institution": "Dr. A. P. J. Abdul Kalam Technical University",
+      "degree": "B.Tech",
+      "field": "Computer Science Engineering",
+      "year": "July 2019 - June 2023",
+      "cgpa": "8.6"
+    }
+  ],
+
+  "certifications": [
+    "Production Delivery: Delivered 3 major backend services to production with 100% on-time delivery and zero post-launch incidents.",
+    "LeetCode: Knight rank with 1850+ rating, solved 500+ problems, participated in 20+ contests.",
+    "Coding Ninjas: Certificate of Excellence in Python and Data Structures.",
+    "Agile Methodologies: Experienced in Scrum practices, sprint planning, and cross-functional team coordination."
+  ]
+}

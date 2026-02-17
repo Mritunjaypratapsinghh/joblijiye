@@ -24,6 +24,12 @@ class Settings(BaseSettings):
     # Groq AI
     groq_api_key: str = ""
     
+    # Redis (for Celery)
+    redis_url: str = ""
+    
+    # Resend (for emails)
+    resend_api_key: str = ""
+    
     # CORS
     cors_origins: list[str] = ["http://localhost:3000"]
     

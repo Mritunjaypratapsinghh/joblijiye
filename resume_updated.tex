@@ -1,0 +1,268 @@
+%-------------------------
+% Resume in Latex
+% Author : Jake Gutierrez
+% Based off of: https://github.com/sb2nov/resume
+% License : MIT
+%------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\setlength{\multicolsep}{-3.0pt}
+\setlength{\columnsep}{-1pt}
+\input{glyphtounicode}
+
+
+%----------FONT OPTIONS----------
+% sans-serif
+% \usepackage[sfdefault]{FiraSans}
+% \usepackage[sfdefault]{roboto}
+% \usepackage[sfdefault]{noto-sans}
+% \usepackage[default]{sourcesanspro}
+
+% serif
+% \usepackage{CormorantGaramond}
+% \usepackage{charter}
+
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.6in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1.19in}
+\addtolength{\topmargin}{-.7in}
+\addtolength{\textheight}{1.4in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\classesList}[4]{
+    \item\small{
+        {#1 #2 #3 #4 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & \textbf{\small #2} \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{1.001\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & \textbf{\small #2}\\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+%----------HEADING----------
+% \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+%   \textbf{\href{http://sourabhbajaj.com/}{\Large Sourabh Bajaj}} & Email : \href{mailto:sourabh@sourabhbajaj.com}{sourabh@sourabhbajaj.com}\\
+%   \href{http://sourabhbajaj.com/}{http://www.sourabhbajaj.com} & Mobile : +1-123-456-7890 \\
+% \end{tabular*}
+
+\begin{center}
+    {\Huge \scshape Mritunjay Pratap Singh} \\ \vspace{1pt}
+    Mayur Vihar-1, New Delhi \\ \vspace{1pt}
+    \small \raisebox{-0.1\height}\faPhone\ +91-7347760567 ~ \href{mailto:mritunjaypratapsinghh@gmail.com}{\raisebox{-0.2\height}\faEnvelope\  \underline{mritunjaypratapsinghh@gmail.com}} ~ 
+    \href{https://www.linkedin.com/in/mritunjaypratapsinghh/}{\raisebox{-0.2\height}\faLinkedin\ \underline{Linkedin Profile}}  ~
+    \href{https://github.com/Mritunjaypratapsinghh}{\raisebox{-0.2\height}\faGithub\ \underline{Github}} ~
+    \href{https://leetcode.com/u/mritunjaypratapsinghh/}{\raisebox{-0.2\height}\faGithub\ \underline{LeetCode}}
+    \vspace{-8pt}
+\end{center}
+
+
+%-----------Profile Summary-------
+\section{Career Objective}
+  \resumeSubHeadingListStart
+        \resumeItem{Backend Software Engineer with 2+ years building scalable microservices, event-driven systems, and REST APIs. Proven expertise in Python, FastAPI, Django, and cloud technologies with a track record of delivering production-grade solutions.}
+  \resumeSubHeadingListEnd
+\vspace{-16pt}
+
+ %-----------EXPERIENCE-----------
+\section{Experience}
+\resumeSubHeadingListStart
+
+\resumeSubheading
+{Kogta Financial India Limited}{July 2025 -- Present}
+{Software Developer}{New Delhi}
+\resumeItemListStart
+\resumeItem{Architected Communication Aggregator Service with FastAPI and MongoDB, processing 100K+ daily messages across WhatsApp/SMS/RCS for 4 business verticals with 40+ REST APIs and AWS SQS-based async processing.}
+\resumeItem{Built multi-vendor Dialer Service integrating Ozonetel, Knowlarity, and Exotel with RBI-compliant call routing, webhook processing, and automated call recording, reducing manual effort by 80\% for 50+ agents.}
+\resumeItem{Developed Receivable Engine for NACH/Cheque processing with PostgreSQL and event-driven architecture, automating payment reconciliation workflows.}
+\resumeItem{Redesigned message tracking system with unique identifiers and audit trails, improving traceability by 100\% and reducing support resolution time by 50\%.}
+\resumeItemListEnd
+
+\resumeSubheading
+{Coding Ninjas}{Feb 2023 -- Nov 2024}
+{Python TA}{Gurugram}
+\resumeItemListStart
+\resumeItem{Developed internal tools using Django, DRF, and PostgreSQL to automate student support workflows.}
+\resumeItem{Built and optimized REST APIs for real-time code evaluation and content delivery systems.}
+\resumeItemListEnd
+
+% \resumeSubheading
+% {JobLijiye.com}{Jan 2022 -- Dec 2022}
+% {Backend Developer}{Remote}
+% \resumeItemListStart
+% \resumeItem{Built secure, scalable APIs with Django, supporting the core job application and listing features.}
+% \resumeItem{Integrated authentication and access control, improving data protection across user roles.}
+% \resumeItem{Optimized database queries and added Redis caching, resulting in faster load times for key endpoints.}
+% \resumeItemListEnd
+
+
+
+
+    
+    
+  \resumeSubHeadingListEnd
+\vspace{-10pt}
+
+
+
+
+
+
+%-----------PROJECTS-----------
+\section{Projects}
+    \vspace{-5pt}
+    \resumeSubHeadingListStart
+    
+\resumeProjectHeading
+  {\textbf{Communication Aggregator Service} $|$ \emph{FastAPI, MongoDB, AWS SQS, OpenSearch, Beanie ODM}}{}
+  \resumeItemListStart
+    \resumeItem{Engineered multi-vertical communication platform processing 100K+ daily messages across WhatsApp, SMS, and RCS for CRM, LMS, LOS, and Generic verticals.}
+    \resumeItem{Implemented event-driven architecture with AWS SQS for async batch processing, message queuing, and webhook handling.}
+    \resumeItem{Built comprehensive tracking system with unique message IDs and complete audit trail, plus self-service Excel upload reducing campaign launch time from days to hours.}
+  \resumeItemListEnd
+    \vspace{-13pt}
+
+\resumeProjectHeading
+  {\textbf{Multi-Vendor Dialer Service} $|$ \emph{FastAPI, MongoDB, Webhooks, REST APIs}}{}
+  \resumeItemListStart
+    \resumeItem{Architected extensible adapter framework supporting Ozonetel, Knowlarity, and Exotel with RBI-compliant automated number selection.}
+    \resumeItem{Built real-time webhook processing for call status updates, CDR logging, and automated call recording retrieval with agent management APIs.}
+  \resumeItemListEnd
+    \vspace{-13pt}
+ 
+\resumeProjectHeading
+  {\textbf{Receivable Engine (NACH Processing)} $|$ \emph{FastAPI, PostgreSQL, AWS SQS}}{}
+\resumeItemListStart
+    \resumeItem{Built automated payment reconciliation system handling NACH and cheque processing with batch validation, under-realization, and bank reversal workflows.}
+    \resumeItem{Designed event-driven architecture using AWS SQS for async processing with optimized PostgreSQL schemas for receivable tracking.}
+\resumeItemListEnd
+
+    \resumeSubHeadingListEnd
+\vspace{-15pt}
+
+
+
+%-----------PROGRAMMING SKILLS-----------
+\section{Technical Skills}
+\begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+        \textbf{Programming Languages}{: Python, Java} \\
+        \textbf{Backend Frameworks}{: FastAPI, Django, Django REST Framework (DRF), Flask, Spring Boot} \\
+        \textbf{Databases}{: PostgreSQL, MongoDB, MySQL, Redis, SQLite} \\
+        \textbf{Cloud \& DevOps}{: AWS (SQS, S3), Docker, Git, GitLab CI/CD} \\
+        \textbf{Message Queues \& Search}{: AWS SQS, OpenSearch, Celery} \\
+        \textbf{Tools \& Integration}{: REST APIs, Webhooks, OAuth 2.0, Postman, JIRA, Swagger} \\
+        \textbf{Core Concepts}{: Microservices, Event-driven Architecture, Multi-tenant Systems, DSA, OOP, DBMS} \\
+    }}
+\end{itemize}
+\vspace{-16pt}
+
+
+
+
+%-----------EDUCATION-----------
+\section{Education}
+\resumeSubHeadingListStart
+  \resumeSubheading
+    {Dr. A. P. J. Abdul Kalam Technical University}{July 2019 -- June 2023}
+    {B.Tech in Computer Science Engineering}{CGPA: 8.6}
+\resumeSubHeadingListEnd
+
+
+\section{Certifications and Achievements}
+    \resumeSubHeadingListStart
+        \resumeItem{\textbf{Production Delivery}: Delivered 3 major backend services to production with 100\% on-time delivery and zero post-launch incidents.}
+        \resumeItem{\textbf{\href{https://leetcode.com/u/mritunjaypratapsinghh/}{LeetCode}}: Knight rank with 1850+ rating, solved 500+ problems, participated in 20+ contests.}
+        \resumeItem{\textbf{Coding Ninjas}: Certificate of Excellence in Python and Data Structures.}
+    \resumeSubHeadingListEnd
+\vspace{-10pt}
+
+
+
+
+
+
+
+
+
+
+        
+   
+
+\end{document}
