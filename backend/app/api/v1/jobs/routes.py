@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException, Query, Request, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import Optional
 from httpx import ConnectError, HTTPStatusError
+from postgrest.exceptions import APIError
 
 from app.repositories import job_repository
 from app.services.scraper import job_scraper_service
@@ -131,6 +132,18 @@ async def list_jobs(
         raise HTTPException(
             status_code=503,
             detail="Database temporarily unavailable. Please try again in a moment."
+        )
+    except APIError as e:
+        logger.error(f"Supabase API error: {e}")
+        # 502 usually means Supabase project is paused
+        if "502" in str(e) or "Bad Gateway" in str(e):
+            raise HTTPException(
+                status_code=503,
+                detail="Database is waking up. Please try again in 30 seconds."
+            )
+        raise HTTPException(
+            status_code=500,
+            detail="Database error occurred."
         )
     except Exception as e:
         logger.error(f"Database error: {e}")
