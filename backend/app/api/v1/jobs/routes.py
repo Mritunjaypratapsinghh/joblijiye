@@ -4,6 +4,7 @@ import os
 from fastapi import APIRouter, HTTPException, Query, Request, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import Optional
+from httpx import ConnectError, HTTPStatusError
 
 from app.repositories import job_repository
 from app.services.scraper import job_scraper_service
@@ -106,24 +107,37 @@ async def list_jobs(
     profile: Optional[dict] = Depends(get_optional_user),
 ):
     """List/search jobs from database with pagination and optional match scoring."""
-    offset = (page - 1) * limit
-    jobs = await job_repository.search(
-        query=query,
-        source=source,
-        location=location,
-        remote_type=remote_type,
-        experience_level=experience_level,
-        sort_by=sort_by if sort_by != "match" else "recent",
-        limit=limit,
-        offset=offset,
-    )
-    total = await job_repository.count_filtered(
-        query=query,
-        source=source,
-        location=location,
-        remote_type=remote_type,
-        experience_level=experience_level,
-    )
+    try:
+        offset = (page - 1) * limit
+        jobs = await job_repository.search(
+            query=query,
+            source=source,
+            location=location,
+            remote_type=remote_type,
+            experience_level=experience_level,
+            sort_by=sort_by if sort_by != "match" else "recent",
+            limit=limit,
+            offset=offset,
+        )
+        total = await job_repository.count_filtered(
+            query=query,
+            source=source,
+            location=location,
+            remote_type=remote_type,
+            experience_level=experience_level,
+        )
+    except ConnectError as e:
+        logger.error(f"Database connection failed: {e}")
+        raise HTTPException(
+            status_code=503,
+            detail="Database temporarily unavailable. Please try again in a moment."
+        )
+    except Exception as e:
+        logger.error(f"Database error: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="An error occurred while fetching jobs."
+        )
     
     # Add match scores if user is authenticated
     job_responses = []
