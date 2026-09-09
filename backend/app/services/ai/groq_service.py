@@ -8,6 +8,12 @@ from app.config import get_settings
 
 logger = logging.getLogger(__name__)
 
+# Current Groq models (as of Sept 2026)
+# llama-3.1-70b-versatile - best for complex tasks
+# llama-3.1-8b-instant - faster, good for simple tasks
+MODEL_LARGE = "llama-3.1-70b-versatile"
+MODEL_FAST = "llama-3.1-8b-instant"
+
 RESUME_SYSTEM_PROMPT = """You are an expert resume writer and ATS optimization specialist.
 Given a user's profile and a job description, generate a tailored resume that:
 1. Highlights relevant experience and skills matching the job requirements
@@ -86,7 +92,7 @@ Generate a tailored resume JSON optimized for this specific role."""
 
         try:
             response = self.client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model=MODEL_LARGE,
                 messages=[
                     {"role": "system", "content": RESUME_SYSTEM_PROMPT},
                     {"role": "user", "content": user_prompt},
@@ -113,7 +119,7 @@ Analyze ATS compatibility and provide score with details."""
 
         try:
             response = self.client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model=MODEL_LARGE,
                 messages=[
                     {"role": "system", "content": ATS_SYSTEM_PROMPT},
                     {"role": "user", "content": user_prompt},
@@ -142,7 +148,7 @@ Keep it under 300 words, professional tone, highlight relevant experience."""
 
         try:
             response = self.client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model=MODEL_LARGE,
                 messages=[{"role": "user", "content": user_prompt}],
                 temperature=0.7,
                 max_tokens=500,
